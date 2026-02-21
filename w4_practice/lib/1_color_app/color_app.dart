@@ -6,7 +6,16 @@ void main() {
   runApp(MaterialApp(debugShowCheckedModeBanner: false, home: Scaffold(body: Home())));
 }
 
-enum CardType { red, blue }
+enum CardType {
+  red(Colors.red),
+  blue(Colors.blue),
+  green(Colors.green),
+  yellow(Colors.yellow);
+
+  final Color color;
+
+  const CardType(this.color);
+}
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -48,11 +57,12 @@ class ColorTapsScreen extends StatelessWidget {
       builder: (BuildContext context, Widget? child) {
         return Scaffold(
           appBar: AppBar(title: Text('Color Taps')),
-          body: Column(
-            children: [
-              ColorTap(type: CardType.red),
-              ColorTap(type: CardType.blue),
-            ],
+          body: ListView.builder(
+            itemCount: CardType.values.length,
+            itemBuilder: (context, index) {
+              final type = CardType.values[index];
+              return ColorTap(type: type);
+            },
           ),
         );
       },
@@ -65,13 +75,14 @@ class ColorTap extends StatelessWidget {
 
   const ColorTap({super.key, required this.type});
 
-  Color get backgroundColor => type == CardType.red ? Colors.red : Colors.blue;
-  int get tapCount => type == CardType.red ? colorService.redCounter : colorService.blueCounter;
+  Color get backgroundColor => type.color;
+
+  int get tapCount => colorService.tapCounts[type]!;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => type == CardType.red ? colorService.onRedCounterTap() : colorService.onBlueCounterTap(),
+      onTap: () => colorService.onIncrementTap(type),
       child: Container(
         margin: EdgeInsets.all(10),
         decoration: BoxDecoration(color: backgroundColor, borderRadius: BorderRadius.circular(10)),
@@ -96,12 +107,12 @@ class StatisticsScreen extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(title: Text('Statistics')),
           body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('Red Taps: ${colorService.redCounter}', style: TextStyle(fontSize: 24)),
-                Text('Blue Taps: ${colorService.redCounter}', style: TextStyle(fontSize: 24)),
-              ],
+            child: ListView.builder(
+              itemCount: CardType.values.length,
+              itemBuilder: (context, index) {
+                final type = CardType.values[index];
+                return Text('${type.name}Taps: ${colorService.tapCounts[type]}', style: TextStyle(fontSize: 24));
+              },
             ),
           ),
         );
