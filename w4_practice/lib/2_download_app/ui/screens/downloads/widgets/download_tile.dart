@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:w4_practice/2_download_app/ui/theme/theme.dart';
 import 'download_controler.dart';
 
 class DownloadTile extends StatelessWidget {
-  const DownloadTile({super.key, required this.controller});
+  const DownloadTile({super.key});
 
-  final DownloadController controller;
+  //final DownloadController controller;
 
   // Get the icon based on download status
   IconData _downloadIcon(DownloadStatus status) {
@@ -21,25 +22,22 @@ class DownloadTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final DownloadController controller = context.watch<DownloadController>();
+
     String title = controller.ressource.name;
     String subTitle = controller.status == DownloadStatus.downloading || controller.status == DownloadStatus.downloaded
         ? "${controller.progress * 100} % completed - ${controller.downLoadSize} of ${controller.ressource.size}"
         : "";
-    return ListenableBuilder(
-      listenable: controller,
-      builder: (context, widget) {
-        return Container(
-          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
-          child: ListTile(
-            title: Text(title, style: TextStyle(color: AppColors.text)),
-            subtitle: Text(subTitle, style: TextStyle(color: AppColors.textLight)),
-            trailing: IconButton(
-              onPressed: () => controller.startDownload(),
-              icon: Icon(_downloadIcon(controller.status), color: AppColors.iconNormal),
-            ),
-          ),
-        );
-      },
+    return Container(
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
+      child: ListTile(
+        title: Text(title, style: TextStyle(color: AppColors.text)),
+        subtitle: Text(subTitle, style: TextStyle(color: AppColors.textLight)),
+        trailing: IconButton(
+          onPressed: () => controller.startDownload(),
+          icon: Icon(_downloadIcon(controller.status), color: AppColors.iconNormal),
+        ),
+      ),
     );
   }
 }

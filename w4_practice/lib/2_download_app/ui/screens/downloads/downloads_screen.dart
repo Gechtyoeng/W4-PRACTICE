@@ -39,11 +39,10 @@ class DownloadsScreen extends StatelessWidget {
               child: ListView.builder(
                 itemCount: controllers.length,
                 itemBuilder: (context, index) {
-                  return ListenableBuilder(
-                    listenable: controllers[index], 
-                    builder: (context, widget) {
-                      return Column(children: [DownloadTile(controller: controllers[index]), SizedBox(height: 12)]);
-                    });  
+                  return ChangeNotifierProvider.value(
+                    value: controllers[index],
+                    child: Column(children: [DownloadTile(), SizedBox(height: 12)]),
+                  );
                 },
               ),
             ),
